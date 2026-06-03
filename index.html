@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <h1>Country Manager</h1>
+        </header>
+
+        <main>
+            <form id="search-form" class="search-box">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Search for a country..." 
+                    autocomplete="off"
+                    aria-label="Search for a country"
+                >
+                <button type="submit" id="search-button">Search</button>
+            </form>
+
+            <div id="content-display">
+                <div class="state-message empty-state">
+                    <p>Search for a country to begin.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
