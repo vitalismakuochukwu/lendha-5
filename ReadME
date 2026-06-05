@@ -1,0 +1,15 @@
+<!-- How to run the project -->
+Since no framework was required to use.I mad used of html,css and a simple javascript code.
+create a new folder   (name it any name of your choice)
+open Vscode
+create three files under the root folder
+index.html
+style.css
+app.js
+write a piece of code of what was asked inside and save all.
+Click on the live server and it will navigate you to your browser to view or see the output.
+
+<!-- Challenges faced -->
+Error Isolation and UX Control
+<!-- Improvements you'd make with more time -->
+Theme Modes: Integrate CSS Variables toggles allowing user preference persistence across light/dark UI profiles.

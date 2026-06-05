@@ -1,33 +1,39 @@
 // --- DOM Selectors ---
-const searchForm = document.getElementById('search-form');
-const searchInput = document.getElementById('search-input');
 const contentDisplay = document.getElementById('content-display');
+const countrySelect = document.getElementById('country-select');
+const searchForm = document.getElementById('search-form');
+
+// --- Constants ---
+const API_BASE_URL = 'https://restcountries.com/v3.1/';
 
 // --- Event Listeners ---
+countrySelect.addEventListener('change', handleCountrySelectChange);
 searchForm.addEventListener('submit', handleSearchSubmit);
 
-/**
- * Handles the submit event of the search form.
- * @param {Event} event 
- */
+window.addEventListener('DOMContentLoaded', populateCountryDropdown);
+
 function handleSearchSubmit(event) {
     event.preventDefault();
-    
-    const query = searchInput.value.trim();
-    if (!query) return;
-
-    fetchCountryData(query);
+    const selectedCountry = countrySelect.value;
+    if (selectedCountry) {
+        fetchCountryData(selectedCountry);
+    }
 }
 
-/**
- * Orchestrates fetching data from the API and controlling layout states.
- * @param {string} countryName 
- */
+function handleCountrySelectChange(event) {
+    const selectedCountry = event.target.value;
+    if (selectedCountry) {
+        fetchCountryData(selectedCountry);
+    }
+}
+
 async function fetchCountryData(countryName) {
+    if (!countryName) return; // Prevent fetching with empty country name
+
     renderLoading();
 
     try {
-        const response = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}`);
+        const response = await fetch(`${API_BASE_URL}name/${encodeURIComponent(countryName)}?fullText=true`);
         
         // Handle 404 and other bad HTTP statuses
         if (!response.ok) {
@@ -49,6 +55,28 @@ async function fetchCountryData(countryName) {
 }
 
 // --- UI Rendering Functions ---
+
+async function populateCountryDropdown() {
+    try {
+        const response = await fetch(`${API_BASE_URL}all?fields=name`);
+        if (!response.ok) throw new Error('Failed to fetch country list');
+        
+        const countries = await response.json();
+        
+        // Sort alphabetically for better user experience
+        countries.sort((a, b) => a.name.common.localeCompare(b.name.common));
+
+        countrySelect.innerHTML = '<option value="" disabled selected>Select a country...</option>';
+        countries.forEach(country => {
+            const option = document.createElement('option');
+            option.value = country.name.common;
+            option.textContent = country.name.common;
+            countrySelect.appendChild(option);
+        });
+    } catch (error) {
+        renderError("Could not load country list. Please refresh the page.");
+    }
+}
 
 function renderLoading() {
     contentDisplay.innerHTML = `

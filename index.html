@@ -18,13 +18,9 @@
 
         <main>
             <form id="search-form" class="search-box">
-                <input 
-                    type="text" 
-                    id="search-input" 
-                    placeholder="Search for a country..." 
-                    autocomplete="off"
-                    aria-label="Search for a country"
-                >
+                <select id="country-select" aria-label="Select a country from the list">
+                    <option value="" disabled selected>Loading countries...</option>
+                </select>
                 <button type="submit" id="search-button">Search</button>
             </form>
 
