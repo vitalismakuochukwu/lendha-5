@@ -3,39 +3,41 @@ const contentDisplay = document.getElementById('content-display');
 const countrySelect = document.getElementById('country-select');
 const searchForm = document.getElementById('search-form');
 
+// --- Global Variables ---
+let countryChoicesInstance = null; // Stores the Choices.js instance
+
 // --- Constants ---
 const API_BASE_URL = 'https://restcountries.com/v3.1/';
 
 // --- Event Listeners ---
 countrySelect.addEventListener('change', handleCountrySelectChange);
 searchForm.addEventListener('submit', handleSearchSubmit);
-
 window.addEventListener('DOMContentLoaded', populateCountryDropdown);
 
 function handleSearchSubmit(event) {
     event.preventDefault();
-    const selectedCountry = countrySelect.value;
+    // Safely extract value from Choices.js instance if available, fallback to native element
+    const selectedCountry = countryChoicesInstance ? countryChoicesInstance.getValue(true) : countrySelect.value;
     if (selectedCountry) {
         fetchCountryData(selectedCountry);
     }
 }
 
 function handleCountrySelectChange(event) {
-    const selectedCountry = event.target.value;
+    const selectedCountry = countryChoicesInstance ? countryChoicesInstance.getValue(true) : event.target.value;
     if (selectedCountry) {
         fetchCountryData(selectedCountry);
     }
 }
 
 async function fetchCountryData(countryName) {
-    if (!countryName) return; // Prevent fetching with empty country name
+    if (!countryName) return; 
 
     renderLoading();
 
     try {
         const response = await fetch(`${API_BASE_URL}name/${encodeURIComponent(countryName)}?fullText=true`);
         
-        // Handle 404 and other bad HTTP statuses
         if (!response.ok) {
             if (response.status === 404) {
                 throw new Error("Country not found. Try checking your spelling!");
@@ -44,8 +46,6 @@ async function fetchCountryData(countryName) {
         }
 
         const data = await response.json();
-        
-        // Extract the target match (we pick the first result returned by the API)
         const country = data[0];
         renderCountryCard(country);
 
@@ -63,16 +63,27 @@ async function populateCountryDropdown() {
         
         const countries = await response.json();
         
-        // Sort alphabetically for better user experience
+        // Sort alphabetically
         countries.sort((a, b) => a.name.common.localeCompare(b.name.common));
 
-        countrySelect.innerHTML = '<option value="" disabled selected>Select a country...</option>';
+        // Clear placeholder and build list
+        countrySelect.innerHTML = '<option value="">Select a country...</option>';
         countries.forEach(country => {
             const option = document.createElement('option');
             option.value = country.name.common;
             option.textContent = country.name.common;
             countrySelect.appendChild(option);
         });
+
+        // Initialize Choices.js custom interface after DOM options are generated
+        countryChoicesInstance = new Choices(countrySelect, {
+            searchEnabled: true,
+            itemSelectText: '',
+            shouldSort: false, // Keeping our custom API sorting order
+            placeholder: true,
+            placeholderValue: 'Select a country...'
+        });
+
     } catch (error) {
         renderError("Could not load country list. Please refresh the page.");
     }
@@ -96,7 +107,6 @@ function renderError(errorMessage) {
 }
 
 function renderCountryCard(country) {
-    // Graceful data extraction matching schema requirements
     const flagUrl = country.flags?.svg || country.flags?.png || '';
     const flagAlt = country.flags?.alt || `Flag of ${country.name?.common}`;
     const name = country.name?.common || 'N/A';
@@ -104,7 +114,6 @@ function renderCountryCard(country) {
     const population = country.population ? country.population.toLocaleString() : '0';
     const region = country.region || 'N/A';
     
-    // Currencies object parser (extracts values out of unique dynamic keys e.g. { NGN: { name: "..." } })
     let currencies = 'N/A';
     if (country.currencies) {
         currencies = Object.values(country.currencies)

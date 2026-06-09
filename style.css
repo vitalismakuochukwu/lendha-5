@@ -31,9 +31,10 @@ header h1 {
     color: #0f172a;
 }
 
-/* --- Search Component --- */
+/* --- Search Component Wrapper --- */
 .search-box {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
     background: #ffffff;
     padding: 0.5rem;
@@ -53,6 +54,7 @@ header h1 {
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
     white-space: nowrap;
+    height: 42px; /* Matches modern input element structures */
 }
 
 .search-box button:hover {
@@ -63,24 +65,51 @@ header h1 {
     transform: scale(0.98);
 }
 
-/* --- Dropdown Select Component --- */
-#country-select {
+/* --- Choices.js Theme Modifications --- */
+.search-box .choices {
     flex: 1;
-    padding: 0.75rem 1rem;
-    font-size: 0.95rem;
+    margin-bottom: 0;
     font-family: inherit;
+}
+
+.search-box .choices__inner {
+    background-color: transparent !important;
+    border: none !important;
+    padding: 0.25rem 0.5rem !important;
+    min-height: 42px !important;
+    display: flex;
+    align-items: center;
+}
+
+.search-box .choices__list--single {
+    padding-left: 0.5rem;
+    font-size: 0.95rem;
     color: #0f172a;
-    background-color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    appearance: none; /* Remove default browser styling */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2364748b'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 1.5em;
-    cursor: pointer;
+}
+
+/* Custom dropdown list matching application card elevations */
+.choices__list--dropdown {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important;
+    margin-top: 8px !important;
+    overflow: hidden;
+    z-index: 50 !important;
+}
+
+/* Internal search input box inside the dropdown overlay */
+.choices__input {
+    background-color: #f8fafc !important;
+    border-radius: 6px !important;
+    border: 1px solid #e2e8f0 !important;
+    font-size: 0.95rem !important;
+    padding: 0.5rem 0.75rem !important;
+}
+
+/* Highlight tracking colors over options */
+.choices__list--dropdown .choices__item--selectable.is-highlighted {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
 }
 
 /* --- Country Card Component --- */
@@ -173,13 +202,14 @@ header h1 {
     .search-box {
         flex-direction: column;
         gap: 0.75rem;
+        padding: 0.75rem;
     }
 
     .search-box button {
         width: 100%;
     }
 
-    #country-select {
+    .search-box .choices {
         width: 100%;
     }
     
