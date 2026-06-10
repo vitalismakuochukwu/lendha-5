@@ -18,20 +18,53 @@ body {
 /* --- Layout Container --- */
 .app-container {
     width: 100%;
-    max-width: 540px;
+    max-width: 840px; /* Increased to naturally accommodate clean comparison layouts */
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
+    transition: max-width 0.3s ease;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
 
 header h1 {
-    text-align: center;
     font-size: 1.8rem;
     font-weight: 700;
     color: #0f172a;
 }
 
-/* --- Search Component Wrapper --- */
+/* --- Added: View Mode Tabs --- */
+.mode-tabs {
+    display: flex;
+    background: #e2e8f0;
+    padding: 0.25rem;
+    border-radius: 8px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+    background: #ffffff;
+    color: #3b82f6;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* --- Search & Compare Wrappers --- */
 .search-box {
     display: flex;
     align-items: center;
@@ -39,8 +72,23 @@ header h1 {
     background: #ffffff;
     padding: 0.5rem;
     border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
     border: 1px solid #e2e8f0;
+}
+
+/* Structural changes for dual selector alignments */
+.compare-inputs {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.vs-divider {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #94a3b8;
+    padding: 0 0.25rem;
 }
 
 .search-box button {
@@ -52,26 +100,18 @@ header h1 {
     font-weight: 500;
     border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    transition: background-color 0.2s ease;
     white-space: nowrap;
-    height: 42px; /* Matches modern input element structures */
+    height: 42px;
 }
 
-.search-box button:hover {
-    background-color: #2563eb;
-}
+.search-box button:hover { background-color: #2563eb; }
 
-.search-box button:active {
-    transform: scale(0.98);
-}
+/* Utilities */
+.hidden { display: none !important; }
 
-/* --- Choices.js Theme Modifications --- */
-.search-box .choices {
-    flex: 1;
-    margin-bottom: 0;
-    font-family: inherit;
-}
-
+/* --- Choices.js Tweaks --- */
+.search-box .choices { flex: 1; margin-bottom: 0; }
 .search-box .choices__inner {
     background-color: transparent !important;
     border: none !important;
@@ -80,51 +120,42 @@ header h1 {
     display: flex;
     align-items: center;
 }
-
-.search-box .choices__list--single {
-    padding-left: 0.5rem;
-    font-size: 0.95rem;
-    color: #0f172a;
-}
-
-/* Custom dropdown list matching application card elevations */
 .choices__list--dropdown {
     border: 1px solid #e2e8f0 !important;
     border-radius: 8px !important;
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important;
-    margin-top: 8px !important;
-    overflow: hidden;
     z-index: 50 !important;
 }
 
-/* Internal search input box inside the dropdown overlay */
-.choices__input {
-    background-color: #f8fafc !important;
-    border-radius: 6px !important;
-    border: 1px solid #e2e8f0 !important;
-    font-size: 0.95rem !important;
-    padding: 0.5rem 0.75rem !important;
+/* --- Display Grid Layout Structures --- */
+.single-display-layout {
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
 }
 
-/* Highlight tracking colors over options */
-.choices__list--dropdown .choices__item--selectable.is-highlighted {
-    background-color: #3b82f6 !important;
-    color: #ffffff !important;
+/* Added: Dual column responsive grid definition */
+.compare-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    width: 100%;
 }
 
 /* --- Country Card Component --- */
 .country-card {
     background: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
     border: 1px solid #e2e8f0;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
     animation: fadeIn 0.3s ease;
 }
 
 .flag-container {
     width: 100%;
-    height: 220px;
+    height: 180px;
     background-color: #f1f5f9;
     border-bottom: 1px solid #e2e8f0;
 }
@@ -136,46 +167,51 @@ header h1 {
 }
 
 .country-details {
-    padding: 1.5rem;
+    padding: 1.25rem;
+    flex-grow: 1;
 }
 
 .country-details h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    font-weight: 700;
+    font-size: 1.35rem;
+    margin-bottom: 0.75rem;
 }
 
 .info-item {
-    margin-bottom: 0.75rem;
-    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
     color: #64748b;
 }
 
-.info-item strong {
-    color: #0f172a;
+.info-item strong { color: #0f172a; }
+
+/* --- Added: Clean Map Containers & Embeds --- */
+.map-container {
+    width: 100%;
+    height: 160px;
+    border-top: 1px solid #e2e8f0;
+    background: #e2e8f0;
 }
 
-/* --- App States (Loading, Error, Empty) --- */
+.map-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* --- Loading / States --- */
 .state-message {
     text-align: center;
     padding: 2.5rem 1.5rem;
     background: #ffffff;
     border-radius: 8px;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
     color: #64748b;
 }
+.error-state { background-color: #fef2f2; color: #dc2626; border-color: #fca5a5; }
 
-.error-state {
-    background-color: #fef2f2;
-    color: #dc2626;
-    border-color: #fca5a5;
-}
-
-/* Simple CSS Spinner */
 .spinner {
-    width: 35px;
-    height: 35px;
+    width: 30px;
+    height: 30px;
     border: 3px solid #e2e8f0;
     border-top-color: #3b82f6;
     border-radius: 50%;
@@ -183,37 +219,30 @@ header h1 {
     animation: spin 0.8s linear infinite;
 }
 
-/* --- Animations --- */
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* --- Mobile Responsiveness --- */
-@media (max-width: 480px) {
-    body {
-        padding: 1rem 0.5rem;
+@media (max-width: 680px) {
+    .compare-grid {
+        grid-template-columns: 1fr; /* Stack side-by-side cards vertically on small views */
     }
-    
+
+    .compare-inputs {
+        flex-direction: column;
+        width: 100%;
+    }
+
     .search-box {
         flex-direction: column;
         gap: 0.75rem;
-        padding: 0.75rem;
     }
 
-    .search-box button {
+    .search-box button, .search-box .choices {
         width: 100%;
     }
 
-    .search-box .choices {
-        width: 100%;
-    }
-    
-    .flag-container {
-        height: 180px;
+    .vs-divider {
+        padding: 0.25rem 0;
     }
 }
