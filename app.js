@@ -1,6 +1,3 @@
-// ==========================================
-// 1. DOM Selectors & Global State
-// ==========================================
 const contentDisplay = document.getElementById('content-display');
 const searchForm = document.getElementById('search-form');
 const compareForm = document.getElementById('compare-form');
@@ -17,9 +14,7 @@ let currentMode = 'explore';
 
 const API_BASE_URL = 'https://restcountries.com/v3.1/';
 
-// ==========================================
-// 2. Initialization & Event Listeners
-// ==========================================
+
 window.addEventListener('DOMContentLoaded', initializeApp);
 
 // Form Submit Listeners (Handles keyboard "Enter" events)
@@ -81,7 +76,6 @@ function handleSearchSubmit(event) {
 }
 
 function handleExploreChange(event) {
-    // Safely pull the selected value from Choices.js event detail or native target fallback
     const selectedCountry = event.detail?.value || event.target.value;
     if (selectedCountry) {
         renderSingleCountryView(selectedCountry);
@@ -91,11 +85,11 @@ function handleExploreChange(event) {
 // --- Compare Mode Handlers ---
 function handleCompareSubmit(event) {
     event.preventDefault();
-    triggerCompareIfReady(true); // True forces validation feedback on explicit form submit
+    triggerCompareIfReady(true);
 }
 
 function handleCompareChange() {
-    triggerCompareIfReady(false); // False allows silent waiting while user inputs selections
+    triggerCompareIfReady(false);
 }
 
 /**
@@ -116,8 +110,33 @@ function triggerCompareIfReady(showValidationError) {
 }
 
 // ==========================================
-// 5. API Services (Data Retrieval)
+// 5. CORS Fallback API Request Layer
 // ==========================================
+
+/**
+ * Performs a fetch request with an automatic public CORS proxy fallback.
+ * Prevents "No 'Access-Control-Allow-Origin'" blocks from breaking the app.
+ * @param {string} targetUrl 
+ * @returns {Promise<Response>}
+ */
+async function fetchWithCORSFallback(targetUrl) {
+    try {
+        // Try the normal direct request first
+        const directResponse = await fetch(targetUrl);
+        if (directResponse.ok) {
+            return directResponse;
+        }
+    } catch (networkError) {
+        // If it throws a browser network error (often caused by CORS blocks), 
+        // silently route through a reliable public CORS-unblocking proxy
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+        const proxyResponse = await fetch(proxyUrl);
+        if (proxyResponse.ok) {
+            return proxyResponse;
+        }
+    }
+    throw new Error("Unable to complete request. Server may be down.");
+}
 
 /**
  * Reusable network layer abstraction to grab specific country JSON datasets.
@@ -125,20 +144,18 @@ function triggerCompareIfReady(showValidationError) {
  * @returns {Promise<Object>} 
  */
 async function fetchCountryFromAPI(countryName) {
-    const response = await fetch(`${API_BASE_URL}name/${encodeURIComponent(countryName)}?fullText=true`);
-    if (!response.ok) {
-        throw new Error(`Could not find data for "${countryName}". Check your internet connection or try again.`);
-    }
+    const targetUrl = `${API_BASE_URL}name/${encodeURIComponent(countryName)}?fullText=true`;
+    const response = await fetchWithCORSFallback(targetUrl);
     const data = await response.json();
     return data[0];
 }
 
 async function populateAllDropdowns() {
     try {
-        const response = await fetch(`${API_BASE_URL}all?fields=name`);
-        if (!response.ok) throw new Error('Failed to fetch country master list.');
-        
+        const targetUrl = `${API_BASE_URL}all?fields=name`;
+        const response = await fetchWithCORSFallback(targetUrl);
         const countries = await response.json();
+        
         countries.sort((a, b) => a.name.common.localeCompare(b.name.common));
 
         const setupSelect = (element, placeholderText) => {
@@ -188,7 +205,6 @@ async function renderSingleCountryView(countryName) {
 async function renderComparisonView(nameA, nameB) {
     renderLoading();
     try {
-        // Concurrently run fetch actions for streamlined performance speeds
         const [dataA, dataB] = await Promise.all([
             fetchCountryFromAPI(nameA),
             fetchCountryFromAPI(nameB)
@@ -229,7 +245,6 @@ function getCountryCardMarkup(country) {
             .join(', ');
     }
 
-    // Secured and sanitized map embedding string formatting
     const mapQuery = encodeURIComponent(name);
     const mapEmbedUrl = `https://maps.google.com/maps?q=${mapQuery}&t=&z=5&ie=UTF8&iwloc=&output=embed`;
 
